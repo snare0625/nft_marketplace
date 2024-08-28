@@ -22,7 +22,7 @@ const MenuItems = ({ isMobile, active, setActive }) => {
   };
 
   return (
-    <ul className={`list-none flexCenter flex-row ${isMobile & 'flex-col h-full'}`}>
+    <ul className={`list-none flexCenter flex-row ${isMobile && 'flex-col h-full'}`}>
       {['Explore NFTs', 'Listed NFTs', 'My NFTs'].map((item, i) => (
         <li
           key={i}
@@ -106,33 +106,34 @@ const NavBar = () => {
             <ButtonGroup setActive={setActive} router={router} />
           </div>
         </div>
+      </div>
 
-        <div className="hidden md:flex ml-2">
-          {isOpen
-            ? (
-              <Image
-                src={images.cross}
-                objectFit="contain"
-                width={20}
-                height={20}
-                alt="close"
-                onClick={() => setIsOpen(false)}
-                className={theme === 'light' && 'filter invert'}
-              />
-            ) : (
-              <Image
-                src={images.menu}
-                objectFit="contain"
-                width={25}
-                height={25}
-                alt="menu"
-                onClick={() => setIsOpen(true)}
-                className={theme === 'light' && 'filter invert'}
-              />
-            )}
+      <div className="hidden md:flex ml-2 ">
+        {isOpen
+          ? (
+            <Image
+              src={images.cross}
+              objectFit="contain"
+              width={20}
+              height={20}
+              alt="close"
+              onClick={() => setIsOpen(false)}
+              className={theme === 'light' && 'filter invert'}
+            />
+          ) : (
+            <Image
+              src={images.menu}
+              objectFit="contain"
+              width={25}
+              height={25}
+              alt="menu"
+              onClick={() => setIsOpen(true)}
+              className={theme === 'light' && 'filter invert'}
+            />
+          )}
 
-          {isOpen && (
-          <div className="">
+        {isOpen && (
+          <div className="fixed inset-0 top-65 dark:bg-nft-dark bg-white z-10 nav-h flex justify-between flex-col">
             <div className="flex-1 p-4">
               <MenuItems active={active} setActive={setActive} isMobile />
             </div>
@@ -140,10 +141,7 @@ const NavBar = () => {
               <ButtonGroup setActive={setActive} router={router} />
             </div>
           </div>
-          )}
-
-        </div>
-
+        )}
       </div>
 
     </nav>
