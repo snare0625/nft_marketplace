@@ -53,7 +53,7 @@ contract NFTMarketPlace is ERC721URIStorage {
 
     // set the owner as msg.sender
     // the owner of the contract is the one deploying it
-    constructor () {
+    constructor ("NeoTokens", "NET") {
         owner = payable(msg.sender);
     }
 
@@ -163,6 +163,63 @@ contract NFTMarketPlace is ERC721URIStorage {
                 // increment the current index
                 currentIndex += 1;
              }
+        }
+
+        return items;
+    }
+
+    /* Returns only items that a user has purchases */
+    function fetchMyNFTs public view returns (MarketItem[] memory) {
+        uint totalItemCount = _tokenIds.current();
+        uint itemCount = 0;
+        uint currentIndex = 0;
+
+        // gives us the number of items we own
+        for (uint i = 0; i < totalItemCount; i++) {
+            // check if nft is mine
+            if (idToMarketItem[i + 1].owner == msg.sender) {
+                itemCount += 1;
+            }
+        }
+
+        MarketItem[] memory items = new MarketItem[](itemCount);
+        for (uint i = 0; i < totalItemCount; i++) {
+            // check if nft is mine
+            if (idToMarketItem[i + 1].owner == msg.sender) {
+                // get the id of the market item
+                uint currentId = i + 1;
+                // get the reference to the current market item
+                MarketItem storage currentItem = idToMarketItem[currentId];
+                // insert into array
+                items[currentIndex] = currentItem;
+                // increment the index
+                currentIndex += 1;
+            }
+        }
+
+        return items;
+    }
+
+    /* Returns only items a user has listed */
+    function fetchItemsListed() public view returns (MarketItem[] memory) {
+        uint totalItemCount = _tokenIds.current();
+        uint itemCount = 0;
+        uint currentIndex = 0;
+
+        for (uint i = 0; i < totalItemCount; i++) {
+            if (idToMarketItem[i + 1].seller == msg.sender) {
+                itemCount += 1;
+            }
+        }
+
+        MarketItem[] memory items = new MarketItem[](itemCount);
+        for (uint i = 0; i < totalItemCount; i++) {
+            if (idToMarketItem[i + 1].seller == msg.sender) {
+                uint currentId = i + 1;
+                MarketItem storage currentItem = idToMarketItem[currentId];
+                items[currentIndex] = currentItem;
+                currentIndex += 1;
+            }
         }
 
         return items;
