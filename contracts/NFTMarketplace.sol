@@ -110,4 +110,62 @@ contract NFTMarketPlace is ERC721URIStorage {
         _transfer(msg.sender, address(this), tokenId);
         emit MarketItemCreated(tokenId, msg.sender, address(this), price, false);
     }
+
+    /* allows someone to resell a token they have purchased */
+    function resellToken(uint256 tokenId, uint256 price) public payable {
+        require(idToMarketItem[tokenId].owner == msg.sender, "Only item owner can perform this operation");
+        require(msg.value == listingPrice, "Price must be equal to listing price");
+        idToMarketItem[tokenId].sold = false;
+        idToMarketItem[tokenId].price = price;
+        idToMarketItem[tokenId].seller = payable(msg.sender);
+        idToMarketItem[tokenId].owner = payable(address(this));
+        _itemsSold.decrement();
+
+        _transfer(msg.sender, address(this), tokenId);
+    }
+
+    /* Creates ther sale of a marketplace item */
+    function createMarketSale(uint256 tokenId) public payable {
+        uint price = idToMarketItem[tokenId].price;
+        require(msg.value === price, "Please submit the asking price in order to complete the purchase");
+        idToMarketItem[tokenId].owner = payable(msg.sender);
+        idToMarketItem[tokenId].sold = true;
+        idToMarketItem[tokenId].seller = payable(address(0));
+        _itemsSold.increment();
+
+        // next, we want to transfer the NFT ownership from the seller to the buyer
+        _transfer(address(this), msg.sender, tokenId);
+        payable(owner).transfer(listingPrice);
+        payable(idToMarketItem[tokenId].seller).transfer(msg.value);
+    }
+
+    /* Returns all unsold market items */
+    function fetchMarketItems() public view returns (MarketItem[] memory) {
+        uint itemCount = _tokenIds.current();
+        uint unsoldItemCount = _tokenIds.current() - _itemsSold.current();
+        uint currentIndex = 0;
+
+        // looping over the number of items created and increment that number if we have an empty address
+
+        // empty array called items
+        // the type of element in the array is marketitem, and the unsolditemcount is the length
+        MarketItem[] memory items = new MarketItem[](unsoldItemCount);
+        for (uint i = 0; i < itemCount; i++) {
+            // check to see if the item is unsold -> checking if the owner is an empty address -> then it's unsold
+            // above, where we were creating a new market item, we were setting the address to be an empty address
+             if (idToMarketItem[i + 1].owner == address(this)) {
+                // the id of the item that we're currently interacting with
+                uint currentId = i + 1;
+                // get the mapping of the idtomarketitem with the -> gives us the reference to the marketitem
+                MarketItem storage currentItem = idToMarketItem[currentId];
+                // insert the market item to the items array
+                items[currentIndex] = currentItem;
+                // increment the current index
+                currentIndex += 1;
+             }
+        }
+
+        return items;
+    }
+
 }
