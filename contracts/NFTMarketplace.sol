@@ -53,7 +53,7 @@ contract NFTMarketPlace is ERC721URIStorage {
 
     // set the owner as msg.sender
     // the owner of the contract is the one deploying it
-    constructor ("NeoTokens", "NET") {
+    constructor() ERC721("NeoTokens", "NET") {
         owner = payable(msg.sender);
     }
 
@@ -127,7 +127,7 @@ contract NFTMarketPlace is ERC721URIStorage {
     /* Creates ther sale of a marketplace item */
     function createMarketSale(uint256 tokenId) public payable {
         uint price = idToMarketItem[tokenId].price;
-        require(msg.value === price, "Please submit the asking price in order to complete the purchase");
+        require(msg.value == price, "Please submit the asking price in order to complete the purchase");
         idToMarketItem[tokenId].owner = payable(msg.sender);
         idToMarketItem[tokenId].sold = true;
         idToMarketItem[tokenId].seller = payable(address(0));
@@ -169,7 +169,7 @@ contract NFTMarketPlace is ERC721URIStorage {
     }
 
     /* Returns only items that a user has purchases */
-    function fetchMyNFTs public view returns (MarketItem[] memory) {
+    function fetchMyNFTs() public view returns (MarketItem[] memory) {
         uint totalItemCount = _tokenIds.current();
         uint itemCount = 0;
         uint currentIndex = 0;

@@ -23,7 +23,7 @@ const createNFT = () => {
     maxSize: 5000000,
   });
 
-  // when one of 'isDragActive', 'isDragAccept', 'is*DragReject' changes, it is recomputed
+  // when one of 'isDragActive', 'isDragAccept', 'is*nnnnDragReject' changes, it is recomputed
   const fileStyle = useMemo(() => (
     `dark:bg-nft-black-1 bg-white border dark:border-white border-nft-gray-2 flex flex-col items-center p-5 rounded-sm border-dashed
     ${isDragActive && ' border-file-active '}
